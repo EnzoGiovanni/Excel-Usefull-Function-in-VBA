@@ -1,6 +1,6 @@
 Function TotalEffectiveRate(amount As Double, MonthPay As Double, NbEch As Long) As Double
     'anount : Total amount of credit deducted all expenses related to credit
-    'MonthPay : monthly payment
+    'MonthPay : monthly payment with Monthly insurance
     
     'hypothesis rate
     TotalEffectiveRate = 0.01
