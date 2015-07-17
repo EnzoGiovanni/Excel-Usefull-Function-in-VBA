@@ -1,21 +1,18 @@
 Function TotalEffectiveRate(amount As Double, MonthPay As Double, NbEch As Long) As Double
     'anount : Total amount of credit deducted all expenses related to credit
-    'MonthPay : monthly payment with Monthly insurance
+    'MonthPay : monthly payment
+    'NbEch : Number of monthly payment
     
-    'hypothesis rate
+    'hypothesis rates
     TotalEffectiveRate = 0.01
     
     'Résolution
     Dim DeltaHypTx As Double
     DeltaHypTx = Poly(amount, MonthPay, TotalEffectiveRate, NbEch) / PolyPrime(amount, MonthPay, TotalEffectiveRate, NbEch)
-    Do While Abs(DeltaHypTx) >= 0.000001
+    Do While Abs(DeltaHypTx) >= 0.0000001
         TotalEffectiveRate = TotalEffectiveRate - DeltaHypTx
-        DeltaHypTx = Poly(amount, MonthPay, TotalEffectiveRate, NbEch) / PolyPrime(amount, MonthPay, TotalEffectiveRate, NbEch)
+        DeltaHypTx = (amount / MonthPay * TotalEffectiveRate * ((1 + TotalEffectiveRate) ^ NbEch) - ((1 + TotalEffectiveRate) ^ NbEch) + 1) _
+                     / (amount / MonthPay * ((1 + TotalEffectiveRate) ^ NbEch) + amount / MonthPay * NbEch * TotalEffectiveRate * ((1 + TotalEffectiveRate) ^ (NbEch - 1)) - NbEch * ((1 + TotalEffectiveRate) ^ (NbEch - 1)))
     Loop
-End Function
-Function Poly(ByRef amount As Double, ByRef MonthPay As Double, ByRef Tx As Double, ByRef NbEch As Long) As Double
-    Poly = amount / MonthPay * Tx * ((1 + Tx) ^ NbEch) - ((1 + Tx) ^ NbEch) + 1
-End Function
-Function PolyPrime(ByRef amount As Double, ByRef MonthPay As Double, ByRef Tx As Double, ByRef NbEch As Long) As Double
-    PolyPrime = amount / MonthPay * ((1 + Tx) ^ NbEch) + amount / MonthPay * NbEch * Tx * ((1 + Tx) ^ (NbEch - 1)) - NbEch * ((1 + Tx) ^ (NbEch - 1))
+    
 End Function
