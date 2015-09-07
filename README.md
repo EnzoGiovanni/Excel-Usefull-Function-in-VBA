@@ -1,3 +1,3 @@
 # Excel-Usefull-Function-in-VBA
 
-Interesting and usefull functions in VBA For Excel
+Interesting and usefull functions in VBA for Excel
