@@ -1,4 +1,5 @@
 Function TotalEffectiveRate(amount As Double, MonthPay As Double, NbEch As Long) As Double
+    'Calculate TEG - Total Effective Rate
     'anount : Total amount of credit deducted all expenses related to credit
     'MonthPay : monthly payment
     'NbEch : Number of monthly payment
