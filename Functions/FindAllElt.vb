@@ -1,4 +1,6 @@
 Function FindAllElt(ByRef Element As Variant, ByRef zone As Range) As Range
+
+    'Preparation of sheet
     On Error Resume Next
         zone.Worksheet.ShowAllData
     On Error GoTo 0
@@ -6,6 +8,8 @@ Function FindAllElt(ByRef Element As Variant, ByRef zone As Range) As Range
         .Rows.EntireRow.Hidden = False
         .Columns.EntireColumn.Hidden = False
     End With
+    
+    'finding all elements
     Dim Elt, Aire As Range: Dim FirstAdresse As String
     For Each Aire In zone.Areas
         With Aire
