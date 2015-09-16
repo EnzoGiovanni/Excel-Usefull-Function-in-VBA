@@ -27,4 +27,5 @@ Function FindAllElt(ByRef Element As Variant, ByRef zone As Range) As Range
             End If
         End With
     Next Aire: Set Aire = Nothing: Set Elt = Nothing
+    
 End Function
