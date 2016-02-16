@@ -1,4 +1,4 @@
-'Fill or cut a string to a specified number
+'Fill with "blank" or cut a string to a specified number
 Function CompletingString(ByRef StrIn As String, ByRef NbCarMax As Long) As String
     Dim NbCar As Long: NbCar = Len(StrIn)
     CompletingString = StrIn
