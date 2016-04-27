@@ -1,4 +1,3 @@
-
 Sub Workbook_SheetChange(ByVal Sh As Object, ByVal Target As Range)
   MoreFasterCode (True)
   With ThisWorkbook.Worksheets("Feuil1")
