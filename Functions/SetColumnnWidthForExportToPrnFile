@@ -10,6 +10,8 @@ End Sub
 
 'Function to set column widh for export to PRN format file
 Function Formater(Colonnes As Range, Largeur As Range)
+'Colonnes => Column to set widh
+'Lageur => consecutive width for each column
     Dim i, NbTot As Long
     Dim Zone, Colonne As Range
     i = 1
