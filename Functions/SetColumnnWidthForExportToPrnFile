@@ -1,0 +1,22 @@
+Option Explicit
+
+'Call Function exemple
+Sub main()
+    Dim Trash As Variant
+    With ThisWorkbook
+        Trash = Formater(.Worksheets("RES").Range("A:T"), .Worksheets("ClauseCopy").Range("D2:D21"))
+    End With
+End Sub
+
+'Function to set column widh for export to PRN format file
+Function Formater(Colonnes As Range, Largeur As Range)
+    Dim i, NbTot As Long
+    Dim Zone, Colonne As Range
+    i = 1
+    For Each Zone In Colonnes.Areas
+        For Each Colonne In Zone.Columns
+            Colonne.ColumnWidth = Largeur.Cells(i).Value
+            i = i + 1
+        Next Colonne
+    Next Zone: Set Colonne = Nothing: Set Zone = Nothing
+End Function
