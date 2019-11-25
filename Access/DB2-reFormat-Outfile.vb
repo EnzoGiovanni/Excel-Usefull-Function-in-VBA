@@ -1,3 +1,5 @@
+'traitement de reformatage des données du résultat d'une requette DB2 paginé
+'###################################################################################################
 Option Compare Database
 '###################################################################################################
 Sub LireFichierTexteParLigne()
