@@ -4,32 +4,21 @@ Option Compare Database
 '###################################################################################################
 Sub LireFichierTexteParLigne()
 '###################################################################################################
-   
-    Dim IndexFichier As Integer
-    Dim MonFichier As String
-    Dim ContenuLigne As String
-    Dim i, k, NbPage As Integer: NbPage = 0
-    Dim Top, TopTitres, TopIncPage As Boolean: Top = False: TopTitres = False: TopIncPage = False
-    
-    
-    Dim TitresDatas() As String
-    Dim Datas() As String
-    
+    Dim IndexFichier, i, k, NumLigneSeparation As Integer: NumLigneSeparation = 0
+    Dim Top, TopTitres As Boolean: Top = False: TopTitres = False
+    Dim TitresDatas(), Lignes, ContenuLigne, MonFichier As String
+
     MonFichier = "C:\Users\368790\Downloads\Extract.txt" '<-- mettez ici le nom du fichier à lire
     IndexFichier = FreeFile()
-    
-        
-    '===================================================================================================
-    Dim NumLigneSeparation As Integer: NumLigneSeparation = 0
     
     
     '===================================================================================================
     'Detecter les colonnes
     '===================================================================================================
-    Open MonFichier For Input As #IndexFichier 'ouvre le fichier
     NumLigneSeparation = 0: k = 0
     '===================================================================================================
-    Do While Not EOF(IndexFichier) '
+    Open MonFichier For Input As #IndexFichier 'ouvre le fichier
+    Do While Not EOF(IndexFichier)
         '===================================================================================================
         Line Input #IndexFichier, ContenuLigne     ' lecture du fichier ligne par ligne: la variable "ContenuLigne" contient le contenu de la ligne active
         '===================================================================================================
@@ -38,22 +27,15 @@ Sub LireFichierTexteParLigne()
             If (NumLigneSeparation = 3) Then NumLigneSeparation = 0
             NumLigneSeparation = NumLigneSeparation + 1
         End If
-        
-        '===================================================================================================
-        'Comptage NbPage
-        If (TopIncPage) Then
-            NbPage = NbPage + 1
-        End If
-        
         '===================================================================================================
         'Si ligne de titres de colonne
         If ((InStr(1, ContenuLigne, "  ! ", vbTextCompare) > 1) And (NumLigneSeparation = 1)) Then
-            
+            '===================================================================================================
             Lignes = Split(ContenuLigne, "!")
             For i = LBound(Lignes) To UBound(Lignes)
                 Lignes(i) = Trim(Lignes(i))
             Next i
-            
+            '===================================================================================================
             For i = LBound(Lignes) To UBound(Lignes)
                If (Len(Lignes(i)) > 0) Then
                     If (Top) Then
@@ -65,6 +47,7 @@ Sub LireFichierTexteParLigne()
                     TitresDatas(k) = Lignes(i): k = k + 1
                End If
             Next i
+            '===================================================================================================
         End If
     '===================================================================================================
     Loop
@@ -76,10 +59,11 @@ Sub LireFichierTexteParLigne()
     'Lire les enregistrements, les formater puis les ecrires dans un csv
     '===================================================================================================
     Dim Taille As Integer: Taille = UBound(TitresDatas) - LBound(TitresDatas) + 1
-    Dim Rec() As String: ReDim Rec(0, Taille + 1)
+    Dim Rec() As String
     Dim RecLig, RecCol As Integer: RecLig = 0: RecCol = 0
-    Open MonFichier For Input As #IndexFichier 'ouvre le fichier
     NumLigneSeparation = 0
+    '===================================================================================================
+    Open MonFichier For Input As #IndexFichier 'ouvre le fichier
     While Not EOF(IndexFichier) '
         '===================================================================================================
         Line Input #IndexFichier, ContenuLigne     ' lecture du fichier ligne par ligne
@@ -89,22 +73,23 @@ Sub LireFichierTexteParLigne()
             If (NumLigneSeparation = 3) Then NumLigneSeparation = 0
             NumLigneSeparation = NumLigneSeparation + 1
         End If
-        
+        '===================================================================================================
         'Si ligne de données
         If ((InStr(1, ContenuLigne, "_! ", vbTextCompare) > 1) And (NumLigneSeparation = 2)) Then
+            'Nettoyage
             Lignes = Split(ContenuLigne, "!")
-            For i = LBound(Lignes) To UBound(Lignes)
-                Lignes(i) = Trim(Lignes(i))
-            Next i
+            For i = LBound(Lignes) To UBound(Lignes): Lignes(i) = Trim(Lignes(i)): Next i
             Lignes(0) = Split(Lignes(0), "_")(0)
             'Transfert à Rec
-            For i = LBound(Lignes) To UBound(Lignes)
-                RecLig = RecLig + CInt(Lignes(0)) - 1
-                Rec(RecLig, i) = Lignes(i)
+            RecLig = CInt(Lignes(0))
+            ReDim Preserve Rec(1 To Taille, 1 To RecLig)
+            For i = 1 To (UBound(Lignes) - 1)
+                Rec(i, RecLig) = Lignes(i)
             Next i
+            
+            ' Maintenant , remplir la 2éme page
+            
         End If
-        
-
         '===================================================================================================
     Wend
     '===================================================================================================
@@ -127,3 +112,4 @@ Sub LireFichierTexteParLigne()
 '===================================================================================================
 End Sub
 '===================================================================================================
+
