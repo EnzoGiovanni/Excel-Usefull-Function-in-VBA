@@ -5,12 +5,12 @@ Option Compare Database
 Sub LireFichierTexteParLigne()
 '###################################################################################################
     Dim IndexFichier, i, k, NumLigneSeparation, NbPages As Integer: NumLigneSeparation = 0
-    Dim Top, TopTitres, TopDebLi As Boolean: Top = False: TopTitres = False: TopDebLi = True
+    Dim Top, TopTitres, TopDebLi, TopSepar As Boolean: Top = False: TopTitres = False: TopDebLi = True: TopSepar = False
     Dim TitresDatas(), Lignes, ContenuLigne, FileIn, FileOut As String
     
     '===================================================================================================
     'Extraction SQL DB2 d'entrée
-    FileIn = "C:\Users\368790\Downloads\carte agence 03102.txt"
+    FileIn = "C:\Users\368790\Downloads\Cartes Agce 03102.txt"
     
     'Extraction SQL DB2 de sortie formaté CSV
     FileOut = "C:\Users\368790\Downloads\Out.txt"
@@ -30,8 +30,9 @@ Sub LireFichierTexteParLigne()
         Line Input #IndexFichier, ContenuLigne     ' lecture du fichier ligne par ligne: la variable "ContenuLigne" contient le contenu de la ligne active
         '===================================================================================================
         'Si ligne de séparation
+        TopSepar = (InStr(1, ContenuLigne, "  +--", vbTextCompare) > 1) Or (InStr(1, ContenuLigne, "   ---", vbTextCompare) > 1)
         If (InStr(1, ContenuLigne, "PAGE", vbTextCompare) > 1) Then NumLigneSeparation = 0
-        If (InStr(1, ContenuLigne, "  +--", vbTextCompare) > 1) Then NumLigneSeparation = NumLigneSeparation + 1
+        If (TopSepar) Then NumLigneSeparation = NumLigneSeparation + 1
         '===================================================================================================
         'Si ligne de titres de colonne
         If ((InStr(1, ContenuLigne, "  ! ", vbTextCompare) > 1) And (NumLigneSeparation = 1)) Then
@@ -56,6 +57,8 @@ Sub LireFichierTexteParLigne()
             '===================================================================================================
             NbPages = NbPages + 1
         End If
+        '===================================================================================================
+        TopSepar = False
     '===================================================================================================
     Loop
     '===================================================================================================
@@ -68,7 +71,7 @@ Sub LireFichierTexteParLigne()
     Dim Taille As Integer: Taille = UBound(TitresDatas) - LBound(TitresDatas) + 1
     Dim Rec(), RecOut As String
     Dim PageCourante As Integer: PageCourante = 0
-    Dim DebLi, RecLig As Long: DebLi = 0: RecLig = 0
+    Dim DebLi, RecLig, RecCol As Long: DebLi = 0: RecLig = 0: RecCol = 0
     NumLigneSeparation = 0
     '===================================================================================================
     Open FileIn For Input As #IndexFichier 'ouvre le fichier source
@@ -92,16 +95,13 @@ Sub LireFichierTexteParLigne()
         Line Input #IndexFichier, ContenuLigne     ' lecture du fichier ligne par ligne
         '===================================================================================================
         'Si ligne de séparation
+        TopSepar = (InStr(1, ContenuLigne, "  +--", vbTextCompare) > 1) Or (InStr(1, ContenuLigne, "   ---", vbTextCompare) > 1)
         If (InStr(1, ContenuLigne, "PAGE", vbTextCompare) > 1) Then NumLigneSeparation = 0
-        If (InStr(1, ContenuLigne, "  +--", vbTextCompare) > 1) Then NumLigneSeparation = NumLigneSeparation + 1
+        If (TopSepar) Then NumLigneSeparation = NumLigneSeparation + 1
         '===================================================================================================
         'Si ligne de titres de colonne
         If ((InStr(1, ContenuLigne, "  ! ", vbTextCompare) > 1) And (NumLigneSeparation = 1)) Then
-            If PageCourange < NbPages Then
-                PageCourante = PageCourante + 1
-            Else
-                PageCourante = 1
-            End If
+            If PageCourange < NbPages Then PageCourante = PageCourante + 1 Else PageCourante = 1
         End If
         '===================================================================================================
         'Si ligne de données
@@ -117,21 +117,22 @@ Sub LireFichierTexteParLigne()
             If TopDebLi Then DebLi = RecLig: TopDebLi = False
             
             'Transfert à Rec
-            ReDim Preserve Rec(1 To Taille, DebLi To RecLig) '/!\ BUG /!\  ne pas mettre "1 To RecLig" mais "DEBUT-LIGNE to RecLig"
+            If (PageCourante = 1) Then ReDim Preserve Rec(1 To Taille, DebLi To RecLig)
             For i = 1 To (UBound(Lignes) - 1)
-                Rec(i, RecLig) = Lignes(i)
+                Rec(RecCol + i, RecLig) = Lignes(i)
             Next i
             
-            ' Maintenant , remplir la 2éme page
-            
-            
-            
-            
+        End If
+        '===================================================================================================
+        'Si fin de page mettre à jour variable RecCol
+        '===================================================================================================
+        If ((TopSepar) And (NumLigneSeparation = 3)) Then
+            RecCol = RecCol + (UBound(Lignes) - LBound(Lignes) - 1)
         End If
         '===================================================================================================
         'Si fin de page de renvoie alors décharger les données du tableau Rec et le vider
         '===================================================================================================
-        If ((PageCourante = NbPages) And (InStr(1, ContenuLigne, "  +--", vbTextCompare) > 1) And (NumLigneSeparation = 3)) Then
+        If ((PageCourante = NbPages) And (TopSepar) And (NumLigneSeparation = 3)) Then
             '===================================================================================================
             'Transférer REC dans le fichier de sortie
             Dim ColMin, ColMax As Integer
@@ -148,12 +149,10 @@ Sub LireFichierTexteParLigne()
             Next Lig
             '===================================================================================================
             'RàZ variables
-            Erase Rec()
-            PageCourante = 0
-            TopDebLi = True
-            
+            Erase Rec(): PageCourante = 0: TopDebLi = True: RecCol = 0
             '===================================================================================================
         End If
+        TopSepar = False
         '===================================================================================================
     Wend
     '===================================================================================================
