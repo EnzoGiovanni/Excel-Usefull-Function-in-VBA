@@ -10,7 +10,7 @@ Sub LireFichierTexteParLigne()
     
     '===================================================================================================
     'Extraction SQL DB2 d'entrée
-    FileIn = "C:\Users\368790\Downloads\Cartes Agce 03102.txt"
+    FileIn = "C:\Users\368790\Downloads\TCN multipage.txt"
     
     'Extraction SQL DB2 de sortie formaté CSV
     FileOut = "C:\Users\368790\Downloads\Out.txt"
