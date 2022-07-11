@@ -1,0 +1,13 @@
+Function SplitAll(TexteToSplit As String, Spliter As String)
+
+    Splited = Split(TexteToSplit, Spliter)
+    Taille = UBound(Splited) - LBound(Splited) + 1
+
+    If Taille > 0 Then
+        SplitAll = Splited
+    Else
+        SplitAll = ""
+    End If
+    
+    
+End Function
